@@ -239,9 +239,9 @@ function App() {
         >
           {/* Sidebar */}
           <Panel 
-            defaultSize={20} 
+            defaultSize={isMobile ? 30 : 20} 
             minSize={15} 
-            maxSize={40} 
+            maxSize={isMobile ? 50 : 40} 
           >
             <div className="h-full flex flex-col bg-slate-50 dark:bg-slate-900/50 border-r border-b md:border-b-0 border-slate-200 dark:border-slate-800 transition-colors">
               {activeTab === 'challenges' ? (
