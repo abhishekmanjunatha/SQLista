@@ -233,9 +233,18 @@ function App() {
       </header>
       
       <div className="flex-1 flex overflow-hidden">
-        <PanelGroup orientation={isMobile ? "vertical" : "horizontal"} className="h-full w-full">
+        <PanelGroup 
+          key={isMobile ? "mobile" : "desktop"}
+          orientation={isMobile ? "vertical" : "horizontal"} 
+          className="h-full w-full"
+        >
           {/* Sidebar */}
-          <Panel defaultSize={20} minSize={15} maxSize={40} collapsible>
+          <Panel 
+            defaultSize={isMobile ? 30 : 20} 
+            minSize={15} 
+            maxSize={isMobile ? 50 : 40} 
+            collapsible
+          >
             <div className="h-full flex flex-col bg-slate-50 dark:bg-slate-900/50 border-r border-b md:border-b-0 border-slate-200 dark:border-slate-800 transition-colors">
               {activeTab === 'challenges' ? (
                 <>
