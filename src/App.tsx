@@ -220,6 +220,28 @@ print(df.describe())
     }
   };
 
+  const handleSubmit = async () => {
+    if (activeTab === 'playground') return;
+    
+    await handleRun();
+    try {
+      // Run expected query
+      const expectedRes = await runQuery(activeChallenge.expectedSql);
+      const expectedRows = expectedRes.toArray().map((row: any) => row.toJSON());
+      
+      // Run user query again to get fresh result for comparison
+      const userRes = await runQuery(code);
+      const userRows = userRes.toArray().map((row: any) => row.toJSON());
+
+      const isMatch = JSON.stringify(userRows) === JSON.stringify(expectedRows);
+      
+      setValidationStatus(isMatch ? 'success' : 'failure');
+    } catch (err: any) {
+      setValidationStatus('failure');
+      setError(err.message);
+    }
+  };
+
   const handleRunRef = useRef(handleRun);
   handleRunRef.current = handleRun;
 
@@ -242,27 +264,7 @@ print(df.describe())
     }
   };
 
-  const handleSubmit = async () => {
-    if (activeTab === 'playground') return;
-    
-    await handleRun();
-    try {
-      // Run expected query
-      const expectedRes = await runQuery(activeChallenge.expectedSql);
-      const expectedRows = expectedRes.toArray().map((row: any) => row.toJSON());
-      
-      // Run user query again to get fresh result for comparison
-      const userRes = await runQuery(code);
-      const userRows = userRes.toArray().map((row: any) => row.toJSON());
 
-      const isMatch = JSON.stringify(userRows) === JSON.stringify(expectedRows);
-      
-      setValidationStatus(isMatch ? 'success' : 'failure');
-    } catch (err: any) {
-      setValidationStatus('failure');
-      setError(err.message);
-    }
-  };
 
   if (!isReady) {
     return (
