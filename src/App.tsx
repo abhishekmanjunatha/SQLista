@@ -223,10 +223,23 @@ print(df.describe())
   const handleRunRef = useRef(handleRun);
   handleRunRef.current = handleRun;
 
+  const handleSubmitRef = useRef(handleSubmit);
+  handleSubmitRef.current = handleSubmit;
+
   const handleEditorDidMount = (editor: any, monaco: any) => {
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
       handleRunRef.current();
     });
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter, () => {
+      handleSubmitRef.current();
+    });
+  };
+
+  const handleNextChallenge = () => {
+    if (activeChallengeIndex < challenges.length - 1) {
+      setActiveChallengeIndex(prev => prev + 1);
+      setSidebarView('details');
+    }
   };
 
   const handleSubmit = async () => {
@@ -335,6 +348,7 @@ print(df.describe())
           <button 
             onClick={handleRun}
             disabled={language === 'python' && !isPythonReady}
+            title="Run (Ctrl+Enter)"
             className={clsx(
               "px-3 md:px-4 py-1.5 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors flex items-center gap-2",
               language === 'python' && !isPythonReady && "opacity-50 cursor-not-allowed"
@@ -345,12 +359,24 @@ print(df.describe())
           </button>
           
           {activeTab === 'challenges' && (
-            <button 
-              onClick={handleSubmit}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 md:px-4 py-1.5 rounded flex items-center gap-2 font-medium transition-colors shadow-lg shadow-emerald-900/20"
-            >
-              <CheckCircle size={16} /> <span className="hidden sm:inline">Submit</span>
-            </button>
+            <>
+              {validationStatus === 'success' && activeChallengeIndex < challenges.length - 1 ? (
+                <button 
+                  onClick={handleNextChallenge}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-1.5 rounded flex items-center gap-2 font-medium transition-colors shadow-lg shadow-blue-900/20"
+                >
+                  <span className="hidden sm:inline">Next Challenge</span> <ChevronRight size={16} />
+                </button>
+              ) : (
+                <button 
+                  onClick={handleSubmit}
+                  title="Submit (Ctrl+Shift+Enter)"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 md:px-4 py-1.5 rounded flex items-center gap-2 font-medium transition-colors shadow-lg shadow-emerald-900/20"
+                >
+                  <CheckCircle size={16} /> <span className="hidden sm:inline">Submit</span>
+                </button>
+              )}
+            </>
           )}
         </div>
       </header>
@@ -408,9 +434,6 @@ print(df.describe())
                     </div>
                     <div className="flex-1 overflow-y-auto p-4">
                       <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">{activeChallenge.title}</h2>
-                      <div className="text-slate-600 dark:text-slate-400 text-sm mb-4 leading-relaxed whitespace-pre-wrap">
-                        {activeChallenge.description}
-                      </div>
 
                       {activeChallenge.concepts && activeChallenge.concepts.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-4">
