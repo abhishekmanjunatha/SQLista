@@ -11,6 +11,22 @@ An interactive SQL & Python practice tool for Data Engineers, powered by DuckDB-
 - **Custom Data:** Upload your own CSV files to analyze in the playground.
 - **Dark Mode:** Toggle between light and dark themes for comfortable coding.
 - **Resizable Layout:** Customize your workspace with adjustable panels.
+- **Keyboard Shortcuts:** 
+  - Run Code: `Ctrl + Enter` (or `Cmd + Enter`)
+  - Submit Challenge: `Ctrl + Shift + Enter` (or `Cmd + Shift + Enter`)
+
+## Version History
+
+### v0.1.1 (2025-12-28)
+- Added keyboard shortcuts for Run and Submit.
+- Added "Next Challenge" button for smoother workflow.
+- Fixed duplicate challenge descriptions.
+- Updated project name to PySQL.
+
+### v0.1.0
+- Initial release with SQL & Python support.
+- Challenges and Playground modes.
+- DuckDB-WASM and Pyodide integration.
 
 ## Getting Started
 1. Install dependencies: 
