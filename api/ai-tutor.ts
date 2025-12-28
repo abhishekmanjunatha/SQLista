@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { OpenAI } from 'openai';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -8,7 +7,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { provider, apiKey, modelName: customModelName, query, error, schema, context } = req.body;
+    const { provider, apiKey, query, error, schema, context } = req.body;
 
     if (!apiKey) {
       return res.status(401).json({ error: 'Missing API Key' });
@@ -40,50 +39,7 @@ Instructions:
 
     let responseText = '';
 
-    if (provider === 'openai') {
-      const openai = new OpenAI({ apiKey });
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: 'Please help me.' }],
-      });
-      responseText = completion.choices[0].message.content || 'No response';
-    } else if (provider === 'gemini') {
-      const genAI = new GoogleGenerativeAI(apiKey);
-      
-      // If user provided a custom model, try that first and ONLY that
-      let modelsToTry = [];
-      if (customModelName) {
-        modelsToTry = [customModelName];
-      } else {
-        // Try multiple models in order of preference to handle region/account availability
-        modelsToTry = [
-          'gemini-1.5-flash',
-          'gemini-1.5-flash-001',
-          'gemini-1.5-pro',
-          'gemini-1.5-pro-001',
-          'gemini-pro',
-          'gemini-1.0-pro',
-          'gemini-1.0-pro-001'
-        ];
-      }
-      
-      let errors = [];
-      for (const modelName of modelsToTry) {
-        try {
-          const model = genAI.getGenerativeModel({ model: modelName });
-          const result = await model.generateContent(systemPrompt);
-          responseText = result.response.text();
-          break; // Success, exit loop
-        } catch (err: any) {
-          console.warn(`Failed to use model ${modelName}:`, err.message);
-          errors.push(`${modelName}: ${err.message}`);
-        }
-      }
-      
-      if (!responseText) {
-        throw new Error(`All Gemini models failed. Details: ${errors.join(' | ')}`);
-      }
-    } else if (provider === 'groq') {
+    if (provider === 'groq') {
       const openai = new OpenAI({ 
         apiKey, 
         baseURL: 'https://api.groq.com/openai/v1' 
@@ -94,18 +50,8 @@ Instructions:
         messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: 'Please help me.' }],
       });
       responseText = completion.choices[0].message.content || 'No response';
-    } else if (provider === 'xai') {
-      const openai = new OpenAI({ 
-        apiKey, 
-        baseURL: 'https://api.x.ai/v1' 
-      });
-      const completion = await openai.chat.completions.create({
-        model: 'grok-beta',
-        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: 'Please help me.' }],
-      });
-      responseText = completion.choices[0].message.content || 'No response';
     } else {
-      return res.status(400).json({ error: 'Invalid Provider' });
+      return res.status(400).json({ error: 'Only Groq is supported currently.' });
     }
 
     return res.status(200).json({ text: responseText });

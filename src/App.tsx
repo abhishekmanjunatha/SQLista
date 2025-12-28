@@ -27,26 +27,13 @@ function Workspace() {
   const [isAiLoading, setIsAiLoading] = useState(false);
 
   const handleAskAI = async () => {
-    const openaiKey = localStorage.getItem('openai_api_key');
-    const geminiKey = localStorage.getItem('gemini_api_key');
-    const geminiModel = localStorage.getItem('gemini_model');
     const groqKey = localStorage.getItem('groq_api_key');
-    const xaiKey = localStorage.getItem('xai_api_key');
 
-    let provider = '';
-    let apiKey = '';
-    let modelName = '';
+    let provider = 'groq';
+    let apiKey = groqKey || '';
 
-    if (openaiKey) { provider = 'openai'; apiKey = openaiKey; }
-    else if (geminiKey) { 
-      provider = 'gemini'; 
-      apiKey = geminiKey; 
-      if (geminiModel) modelName = geminiModel;
-    }
-    else if (groqKey) { provider = 'groq'; apiKey = groqKey; }
-    else if (xaiKey) { provider = 'xai'; apiKey = xaiKey; }
-    else {
-      alert("Please configure an AI API Key in Settings first.");
+    if (!groqKey) {
+      alert("Please configure your Groq API Key in Settings first.");
       setIsSettingsOpen(true);
       return;
     }
@@ -61,7 +48,6 @@ function Workspace() {
         body: JSON.stringify({
           provider,
           apiKey,
-          modelName,
           query: code,
           error: error || "My query is not producing the expected result.",
           schema,
@@ -77,6 +63,11 @@ function Workspace() {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setAiResponse(data.text);
+      
+      // Increment hit count
+      const currentCount = parseInt(localStorage.getItem('groq_hit_count') || '0', 10);
+      localStorage.setItem('groq_hit_count', (currentCount + 1).toString());
+      
     } catch (err: any) {
       console.error("AI Tutor Error:", err);
       setAiResponse(`Error: ${err.message}. Please check your API key and network connection.`);
