@@ -89,7 +89,8 @@ Instructions:
         baseURL: 'https://api.groq.com/openai/v1' 
       });
       const completion = await openai.chat.completions.create({
-        model: 'llama3-70b-8192',
+        // Updated to latest supported model
+        model: 'llama-3.3-70b-versatile',
         messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: 'Please help me.' }],
       });
       responseText = completion.choices[0].message.content || 'No response';

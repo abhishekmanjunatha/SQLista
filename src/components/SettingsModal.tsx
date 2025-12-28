@@ -10,6 +10,7 @@ interface SettingsModalProps {
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [openaiKey, setOpenaiKey] = useState('');
   const [geminiKey, setGeminiKey] = useState('');
+  const [geminiModel, setGeminiModel] = useState('');
   const [groqKey, setGroqKey] = useState('');
   const [xaiKey, setXaiKey] = useState('');
 
@@ -17,6 +18,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     if (isOpen) {
       setOpenaiKey(localStorage.getItem('openai_api_key') || '');
       setGeminiKey(localStorage.getItem('gemini_api_key') || '');
+      setGeminiModel(localStorage.getItem('gemini_model') || '');
       setGroqKey(localStorage.getItem('groq_api_key') || '');
       setXaiKey(localStorage.getItem('xai_api_key') || '');
     }
@@ -25,6 +27,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const handleSave = () => {
     localStorage.setItem('openai_api_key', openaiKey);
     localStorage.setItem('gemini_api_key', geminiKey);
+    localStorage.setItem('gemini_model', geminiModel);
     localStorage.setItem('groq_api_key', groqKey);
     localStorage.setItem('xai_api_key', xaiKey);
     onClose();
@@ -60,10 +63,20 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             placeholder="AIza..."
             className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
+          <input
+            type="text"
+            value={geminiModel}
+            onChange={(e) => setGeminiModel(e.target.value)}
+            placeholder="Optional: Custom Model Name (e.g. gemini-1.5-flash)"
+            className="w-full mt-2 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Groq API Key (Llama/Mixtral)</label>
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            Groq API Key 
+            <span className="ml-2 text-xs font-normal text-slate-500">(Fast inference for Llama/Mixtral models)</span>
+          </label>
           <input
             type="password"
             value={groqKey}
@@ -74,7 +87,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">xAI API Key (Grok)</label>
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            xAI API Key 
+            <span className="ml-2 text-xs font-normal text-slate-500">(Elon Musk's Grok model - Different from Groq)</span>
+          </label>
           <input
             type="password"
             value={xaiKey}
