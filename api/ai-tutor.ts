@@ -49,7 +49,8 @@ Instructions:
       responseText = completion.choices[0].message.content || 'No response';
     } else if (provider === 'gemini') {
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      // Fallback to gemini-pro if flash is not available
+      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
       const result = await model.generateContent(systemPrompt);
       responseText = result.response.text();
     } else if (provider === 'groq') {
