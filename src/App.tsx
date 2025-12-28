@@ -21,7 +21,55 @@ function App() {
   
   const [showHint, setShowHint] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [isAiLoading, setIsAiLoading] = useState(false);
   const { isSignedIn } = useUser();
+
+  const handleAskAI = async () => {
+    const openaiKey = localStorage.getItem('openai_api_key');
+    const geminiKey = localStorage.getItem('gemini_api_key');
+    const groqKey = localStorage.getItem('groq_api_key');
+    const xaiKey = localStorage.getItem('xai_api_key');
+
+    let provider = '';
+    let apiKey = '';
+
+    if (openaiKey) { provider = 'openai'; apiKey = openaiKey; }
+    else if (geminiKey) { provider = 'gemini'; apiKey = geminiKey; }
+    else if (groqKey) { provider = 'groq'; apiKey = groqKey; }
+    else if (xaiKey) { provider = 'xai'; apiKey = xaiKey; }
+    else {
+      alert("Please configure an AI API Key in Settings first.");
+      setIsSettingsOpen(true);
+      return;
+    }
+
+    setIsAiLoading(true);
+    setAiResponse(null);
+
+    try {
+      const res = await fetch('/api/ai-tutor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider,
+          apiKey,
+          query: code,
+          error: error || "My query is not producing the expected result.",
+          schema,
+          context: activeChallenge
+        })
+      });
+
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setAiResponse(data.text);
+    } catch (err: any) {
+      setAiResponse(`Error: ${err.message}`);
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
 
   const [code, setCode] = useState("");
   const [pythonCode, setPythonCode] = useState(`import pandas as pd
@@ -730,11 +778,43 @@ print(df.describe())
 
       <Modal
         isOpen={showHint}
-        onClose={() => setShowHint(false)}
+        onClose={() => { setShowHint(false); setAiResponse(null); }}
         title="Hint"
       >
-        <div className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
-          {activeChallenge.hint}
+        <div className="space-y-4">
+          <div className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+            {activeChallenge.hint}
+          </div>
+
+          <div className="border-t border-slate-200 dark:border-slate-800 pt-4">
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+              <Code2 size={16} className="text-purple-500" /> AI Tutor
+            </h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+              Stuck? Ask the AI Tutor for a personalized hint based on your current query and error.
+            </p>
+            
+            {!aiResponse && !isAiLoading && (
+              <button
+                onClick={handleAskAI}
+                className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                Ask AI Tutor
+              </button>
+            )}
+
+            {isAiLoading && (
+              <div className="flex items-center justify-center py-4 text-purple-600 dark:text-purple-400">
+                <Loader2 size={24} className="animate-spin" />
+              </div>
+            )}
+
+            {aiResponse && (
+              <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/30 rounded-md p-3 text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap animate-in fade-in slide-in-from-bottom-2">
+                {aiResponse}
+              </div>
+            )}
+          </div>
         </div>
       </Modal>
 
