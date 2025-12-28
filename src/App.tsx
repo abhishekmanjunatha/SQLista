@@ -4,10 +4,10 @@ import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "reac
 import { initDuckDB, runQuery, resetTable, importCSV, getDatabaseSchema, runQueryToParquet } from './lib/duckdb';
 import { challenges } from './lib/challenges';
 import { EMPLOYEE_DATASET_SQL } from './lib/playground-data.ts';
-import { Play, Loader2, CheckCircle, XCircle, ChevronRight, ChevronLeft, Terminal, BookOpen, Database, Sun, Moon, ChevronDown, Upload, Code2, Lightbulb, Key, X, Lock, Settings } from 'lucide-react';
+import { Play, Loader2, CheckCircle, XCircle, ChevronRight, ChevronLeft, Terminal, BookOpen, Database, Sun, Moon, ChevronDown, Upload, Code2, Lightbulb, Key, Lock, Settings } from 'lucide-react';
 import clsx from 'clsx';
 import PyodideWorker from './workers/pyodide.worker.ts?worker';
-import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import { Modal } from './components/Modal';
 import { SettingsModal } from './components/SettingsModal';
 import { LandingPage } from './components/LandingPage';
@@ -24,7 +24,6 @@ function Workspace() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const { isSignedIn } = useUser();
 
   const handleAskAI = async () => {
     const openaiKey = localStorage.getItem('openai_api_key');

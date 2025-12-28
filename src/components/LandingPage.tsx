@@ -1,5 +1,5 @@
 import { SignInButton } from "@clerk/clerk-react";
-import { Database, Terminal, Code2, Brain, Lock, ArrowRight } from "lucide-react";
+import { Database, Terminal, Code2, Brain, ArrowRight } from "lucide-react";
 
 export function LandingPage() {
   return (
