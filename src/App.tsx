@@ -10,8 +10,9 @@ import PyodideWorker from './workers/pyodide.worker.ts?worker';
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/clerk-react";
 import { Modal } from './components/Modal';
 import { SettingsModal } from './components/SettingsModal';
+import { LandingPage } from './components/LandingPage';
 
-function App() {
+function Workspace() {
   const [isReady, setIsReady] = useState(false);
   const [isPythonReady, setIsPythonReady] = useState(false);
   const [activeTab, setActiveTab] = useState<'challenges' | 'playground'>('challenges');
@@ -823,6 +824,19 @@ print(df.describe())
         onClose={() => setIsSettingsOpen(false)} 
       />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <>
+      <SignedOut>
+        <LandingPage />
+      </SignedOut>
+      <SignedIn>
+        <Workspace />
+      </SignedIn>
+    </>
   );
 }
 
