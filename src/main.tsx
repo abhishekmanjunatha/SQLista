@@ -1,9 +1,10 @@
-import { StrictMode } from 'react'
+import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ClerkProvider } from '@clerk/clerk-react'
 import './index.css'
-import App from './App.tsx'
 import { ErrorBoundary } from './components/ErrorBoundary'
+
+const App = lazy(() => import('./App.tsx'))
 
 try {
   console.log(`DataGym Version: ${__APP_VERSION__}`);
@@ -33,7 +34,16 @@ if (!PUBLISHABLE_KEY) {
     <StrictMode>
       <ErrorBoundary>
         <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-          <App />
+          <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Loading DataGym...</p>
+              </div>
+            </div>
+          }>
+            <App />
+          </Suspense>
         </ClerkProvider>
       </ErrorBoundary>
     </StrictMode>,
