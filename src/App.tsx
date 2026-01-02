@@ -722,7 +722,7 @@ print(df.describe())
       {/* Footer */}
       <footer className="h-8 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 flex items-center justify-between px-4 text-xs text-slate-500 dark:text-slate-400 transition-colors">
         <div>
-          DataGym v{__APP_VERSION__}
+          DataGym v{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'Dev'}
         </div>
         <div>
           Created by <span className="font-medium text-slate-700 dark:text-slate-300">Abhishek Manjunath</span>
